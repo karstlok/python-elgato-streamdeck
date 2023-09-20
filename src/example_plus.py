@@ -74,14 +74,22 @@ def rotary_change(deck, rotary, rotary_state):
         deck.set_lcd_image(0, 0, 800, 100, img_byte_arr)
         
 # callback when rotaries are turned 
-def rotary_turned(values):
+def rotary_turned(deck, values):
     for rotary_no, (value) in enumerate(values):
         if value != 0:
             print("rotary "+ str(rotary_no) +" turned: " + str(value))
-            
+            if rotary_no == 3:
+                newbrightness = min(max(deck.lastbrightness + 10*value,0), 100)
+                if newbrightness == deck.lastbrightness:
+                    print("Brightness limit: {}".format(deck.lastbrightness))
+                else:
+                    print("Setting brightness: {}".format(newbrightness))
+                    deck.set_brightness(newbrightness)
+                    deck.lastbrightness=newbrightness
+
 
 # callback when lcd is touched
-def lcd_touched(event_type, x, y, x_out = 0, y_out = 0):
+def lcd_touched(deck, event_type, x, y, x_out = 0, y_out = 0):
     
     if event_type == deck.TOUCH_EVENT_SHORT:
     
@@ -120,8 +128,9 @@ if __name__ == "__main__":
 
         print("Opened '{}' device (serial number: '{}')".format(deck.deck_type(), deck.get_serial_number()))
 
-        # Set initial screen brightness to 30%.
-        deck.set_brightness(100)
+        # Set initial screen brightness to 50%.
+        deck.set_brightness(50)
+        deck.lastbrightness=50 # preserve value in this deck's context
 
         
         for key in range(0, deck.KEY_COUNT):

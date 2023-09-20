@@ -149,7 +149,7 @@ class StreamDeck(ABC):
                             for rotary_no in range(0, self.ROTARY_COUNT):
                                 rotary_status.append( hid_states[4 + rotary_no] if hid_states[4 + rotary_no] < 0x80 else -(0x100 - hid_states[4 + rotary_no]) )
                             if self.rotaryturn_callback is not None:
-                                self.rotaryturn_callback(rotary_status)
+                                self.rotaryturn_callback(self, rotary_status)
                         else:
                             # rotary pushed
                             new_rotary_states = [bool(s) for s in hid_states[4:4+self.ROTARY_COUNT]]
@@ -166,13 +166,13 @@ class StreamDeck(ABC):
                         
                         if hid_states[3] != self.TOUCH_EVENT_DRAG:
                             if self.lcdtouch_callback is not None:
-                                self.lcdtouch_callback(hid_states[3],x,y)
+                                self.lcdtouch_callback(self, hid_states[3],x,y)
                         else:
                             # drag event
                             x_out = (hid_states[10]<<8)+hid_states[9]
                             y_out = (hid_states[12]<<8)+hid_states[11]
                             if self.lcdtouch_callback is not None:
-                                self.lcdtouch_callback(hid_states[3],x,y,x_out, y_out)
+                                self.lcdtouch_callback(self, hid_states[3],x,y,x_out, y_out)
                 else:
                     # support for button-only decks
                     new_key_states = hid_states
